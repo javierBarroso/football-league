@@ -16,7 +16,7 @@
         $query_create_league_table = "CREATE TABLE IF NOT EXISTS `" . LEAGUES_TABLE . "`(
             `ID` INT NOT NULL AUTO_INCREMENT,
             `name` TEXT NOT NULL, 
-            `logo` TEXT, 
+            `logo` TEXT NOT NULL, 
             PRIMARY KEY (`ID`)
         );";
         $wpdb->query($query_create_league_table);

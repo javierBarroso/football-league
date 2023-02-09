@@ -100,8 +100,12 @@ class Football_League_Admin
         $action = isset($_GET['action']) ? sanitize_text_field($_GET['action']) : '';
 
         switch( $action ){
-            case 'add' or 'edit':
+            case 'add':
+            case 'edit':
                 require_once FOOTBALL_LEAGUE_PATH . 'admin/partials/page-team-add.php';
+                break;
+            case 'delete':
+                $this->delete_team($_GET['team']);
                 break;
             default:
                 require_once FOOTBALL_LEAGUE_PATH . 'admin/partials/page-teams-list.php';
@@ -115,17 +119,34 @@ class Football_League_Admin
         $action = isset($_GET['action']) ? sanitize_text_field($_GET['action']) : '';
 
         switch ($action) {
-            case 'add' or 'edit':
+            case 'add':
+            case 'edit':
                 require_once FOOTBALL_LEAGUE_PATH . 'admin/partials/page-league-add.php';
                 break;
-            
+            case 'delete':
+                $this->delete_league($_GET['league']);
+                break;
             default:
                 require_once FOOTBALL_LEAGUE_PATH . 'admin/partials/page-leagues-list.php';
                 break;
         }
     }
 
+    public function get_team($team_id){
 
+        global $wpdb;
+
+        $query_get_team = "SELECT * FROM " . TEAMS_TABLE . " WHERE ID = " . $team_id;
+
+        $team = $wpdb->get_results($query_get_team);
+
+        /* if(empty($team)){
+            $team = array(null);
+        } */
+        
+        return $team[0];
+
+    }
 
 
 
@@ -144,13 +165,24 @@ class Football_League_Admin
 
         $teams = $wpdb->get_results($query_get_teams);
 
-        if (empty($teams)) {
+        /* if (empty($teams)) {
             $teams = array(null);
-        }
+        } */
 
         return $teams;
 
     }
+
+    function delete_team($team_id){
+
+        global $wpdb;
+
+        $wpdb->delete(TEAMS_TABLE, array('ID' => $team_id));
+        print('<script>window.location.href="admin.php?page=fl"</script>');
+
+    }
+
+    //TODO: function get_team 
 
     public function get_league( $league_id ){
 
@@ -160,11 +192,18 @@ class Football_League_Admin
 
         $league = $wpdb->get_results($query_get_league);
 
-        if(empty($league)){
-            $league = array(null);
-        }
-
         return $league[0];
+    }
+
+    public function delete_league($league_id){
+
+        global $wpdb;
+
+        if(!$wpdb->delete(LEAGUES_TABLE, array('ID' => $league_id))){
+
+            print('<script>window.location.href="admin.php?page=fl-leagues&delete_error=1"</script>');
+        }
+        print('<script>window.location.href="admin.php?page=fl-leagues"</script>');
     }
     /**
      * get stored leagues
@@ -181,10 +220,6 @@ class Football_League_Admin
 
         $leagues = $wpdb->get_results($query_get_leagues);
 
-        if(empty($leagues)){
-            $leagues = array(null);
-        }
-        var_dump($leagues[0]->name);
         return $leagues;
 
     }
@@ -223,16 +258,20 @@ class Football_League_Admin
             $league_data = [
                 'ID' => $league,
                 'name' => $data['name'],
-                //'logo' => $data['logo']
+                'logo' => $data['logo']
             ];
 
             if($league){
                 $wpdb->update(LEAGUES_TABLE, $league_data, array('ID' => $league));
+                print('<script>window.location.href="admin.php?page=fl-leagues"</script>');
                 return true;
             }
-
+            
             $wpdb->insert(LEAGUES_TABLE, $league_data);
+
+            print('<script>window.location.href="admin.php?page=fl-leagues"</script>');
             return true;
+            
         }
         return false;
     }
@@ -254,16 +293,18 @@ class Football_League_Admin
                 'name' => $data['name'],
                 'nickname' => $data['nickname'],
                 'history' => $data['history'],
-                //'logo' => $data['logo'],
+                'logo' => $data['logo'],
             ];
 
             if ($team) {
 
                 $wpdb->update(TEAMS_TABLE, $team_data, array('ID' => $team));
+                print('<script>window.location.href="admin.php?page=fl"</script>');
                 return true;
                 
             } 
             $wpdb->insert(TEAMS_TABLE, $team_data);
+            print('<script>window.location.href="admin.php?page=fl"</script>');
             return true;
         }
 
@@ -291,6 +332,7 @@ class Football_League_Admin
         */
 
         wp_enqueue_style($this->plugin_name, plugin_dir_url(__FILE__) . 'css/football-league-admin.css', array(), $this->version, 'all');
+
     }
 
     /**
