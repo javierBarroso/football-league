@@ -1,91 +1,166 @@
 <?php
-class Football_League_Public
+
+
+if (!defined('ABSPATH')) {
+	exit();
+}
+
+if ( ! function_exists( 'get_plugins' ) ) {
+	require_once ABSPATH . 'wp-admin/includes/plugin.php';
+}
+
+final class Football_League_Public
 {
-    /**
-	 * The ID of this plugin.
-	 *
-	 * @since    1.0.0
-	 * @access   private
-	 * @var      string    $plugin_name    The ID of this plugin.
-	 */
-	private $plugin_name;
 
-	/**
-	 * The version of this plugin.
-	 *
-	 * @since    1.0.0
-	 * @access   private
-	 * @var      string    $version    The current version of this plugin.
-	 */
-	private $version;
+	const MINIMUM_ELEMENTOR_VERSION  = '3.6.0';
 
-	/**
-	 * Initialize the class and set its properties.
-	 *
-	 * @since    1.0.0
-	 * @param      string    $plugin_name       The name of the plugin.
-	 * @param      string    $version    The version of this plugin.
-	 */
-	public function __construct($plugin_name, $version)
+	const MINIMUM_PHP_VERSION = '7.0';
+
+	private static $_instance = null;
+
+	public static function instance()
 	{
 
-		$this->plugin_name = $plugin_name;
-		$this->version = $version;
+		if (is_null(self::$_instance)) {
+			self::$_instance = new self;
+		}
 
-		// require FOOTBALL_LEAGUE . 'public/class-breaking-news-ticker-shortcode.php';
-
-		// add_shortcode('NEWSTICKER', array($this, 'print_breaking_news_ticker'));
+		return self::$_instance;
 	}
 
+	public function __construct()
+	{
+		if ($this->is_compatible() && add_action('admin_menu', array($this, 'elementor_version'))) {
+			add_action('elementor/init', [$this, 'init']);
+		}
+	}
 
-    //TODO: Load Elementor Widget
-	/** 
-	 * print the breaking news ticker for the public face of the site
-	 * 
-	 * @since	1.0.0
-	 * 
-	 * @param	string	$id breaking news ticker ID
-	 * @return	string	html block for the public side
-	 */
-	// function print_breaking_news_ticker($id)
-	// {
+	function elementor_version(){
 
-	// 	if (class_exists('Breaking_News_Ticker_ShortCode')) {
+		if (!version_compare(ELEMENTOR_VERSION, self::MINIMUM_ELEMENTOR_VERSION, '>=')) {
+			add_action('admin_notices', [$this, 'admin_notice_minimum_elementor_version']);
+			return false;
+		}
+		return true;
+	}
 
-	// 		return Breaking_News_Ticker_ShortCode::print($id);
-			
-	// 	}
-
-	// }
-
-	/**
-	 * Register the stylesheets for the public-facing side of the site.
-	 *
-	 * @since    1.0.0
-	 */
-	public function enqueue_styles()
+	public function is_compatible()
 	{
 
-		/**
-		 * enqueue css stylesheets for the public faceing side of the site
-		 */
+		if (!is_plugin_active('elementor/elementor.php')) {
+			add_action('admin_notices', [$this, 'admin_notice_missing_main_plugin']);
+			return false;
+		}
 
-		wp_enqueue_style($this->plugin_name, plugin_dir_url(__FILE__) . 'css/football-league-public.css', array(), $this->version, 'all');
+		if (version_compare(PHP_VERSION, self::MINIMUM_PHP_VERSION, '<')) {
+			add_action('admin_notices', [$this, 'admin_notice_minimum_php_version']);
+			return false;
+		}
+
+		return true;
+	}
+
+	public function admin_notice_missing_main_plugin()
+	{
+
+		if (isset($_GET['activate'])) unset($_GET['activate']);
+
+		$message = sprintf(
+			/* translators: 1: Plugin name 2: Elementor */
+			esc_html__('"%1$s" requires "%2$s" to be used.', 'football-league'),
+			'<strong>' . esc_html__('Football League', 'football-league') . '</strong>',
+			'<strong>' . esc_html__('Elementor', 'football-league') . '</strong>'
+		);
+
+		printf('<div class="notice notice-warning is-dismissible"><p>%1$s</p></div>', $message);
 	}
 
 	/**
-	 * Register the JavaScript for the public-facing side of the site.
+	 * Admin notice
 	 *
-	 * @since    1.0.0
+	 * Warning when the site doesn't have a minimum required Elementor version.
+	 *
+	 * @since 1.0.0
+	 * @access public
 	 */
-	public function enqueue_scripts()
+	public function admin_notice_minimum_elementor_version()
 	{
 
-		/**
-		 * enqueue javascripts files for the public faceing side of the site
-		 */
+		if (isset($_GET['activate'])) unset($_GET['activate']);
 
-		wp_enqueue_script($this->plugin_name, plugin_dir_url(__FILE__) . 'js/football-league-public.js', array('jquery'), $this->version, false);
+		$message = sprintf(
+			/* translators: 1: Plugin name 2: Elementor 3: Required Elementor version */
+			esc_html__('"%1$s" requires "%2$s" version %3$s or greater.', 'football-league'),
+			'<strong>' . esc_html__('Football League', 'football-league') . '</strong>',
+			'<strong>' . esc_html__('Elementor', 'football-league') . '</strong>',
+			self::MINIMUM_ELEMENTOR_VERSION
+		);
+
+		printf('<div class="notice notice-warning is-dismissible"><p>%1$s</p></div>', $message);
+	}
+
+	/**
+	 * Admin notice
+	 *
+	 * Warning when the site doesn't have a minimum required PHP version.
+	 *
+	 * @since 1.0.0
+	 * @access public
+	 */
+	public function admin_notice_minimum_php_version()
+	{
+
+		if (isset($_GET['activate'])) unset($_GET['activate']);
+
+		$message = sprintf(
+			/* translators: 1: Plugin name 2: PHP 3: Required PHP version */
+			esc_html__('"%1$s" requires "%2$s" version %3$s or greater.', 'football-league'),
+			'<strong>' . esc_html__('Ele Digital Clock', 'football-league') . '</strong>',
+			'<strong>' . esc_html__('PHP', 'football-league') . '</strong>',
+			self::MINIMUM_PHP_VERSION
+		);
+
+		printf('<div class="notice notice-warning is-dismissible"><p>%1$s</p></div>', $message);
+	}
+
+	public function init()
+	{
+
+		add_action('elementor/widgets/register', [$this, 'register_widgets']);
+		add_action('elementor/elements/categories_registered', [$this, 'add_elementor_widget_categories']);
+		
+	}
+
+	public function register_widgets($widgets_manager)
+	{
+
+		require_once(__DIR__ . '/widgets/football-league-widget.php');
+
+		$widgets_manager->register(new \Digital_Clock());
+	}
+
+
+	function add_elementor_widget_categories($elements_manager)
+	{
+
+		$elements_manager->add_category(
+			'jbplugins',
+			[
+				'title' => esc_html__('Football League', 'football-league'),
+				'icon' => 'fa fa-plug',
+			]
+		);
+	}
+
+	public function get_teams(){
+
+		global $wpdb;
+
+        $query_get_teams = "SELECT * FROM " . TEAMS_TABLE;
+
+        $teams = $wpdb->get_results($query_get_teams);
+
+        return $teams;
+
 	}
 }
-?>

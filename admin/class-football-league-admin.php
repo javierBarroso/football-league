@@ -165,10 +165,6 @@ class Football_League_Admin
 
         $teams = $wpdb->get_results($query_get_teams);
 
-        /* if (empty($teams)) {
-            $teams = array(null);
-        } */
-
         return $teams;
 
     }
