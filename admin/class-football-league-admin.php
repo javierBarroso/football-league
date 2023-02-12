@@ -174,7 +174,8 @@ class Football_League_Admin
         global $wpdb;
 
         $wpdb->delete(TEAMS_TABLE, array('ID' => $team_id));
-        print('<script>window.location.href="admin.php?page=fl"</script>');
+        wp_redirect('?page=fl');
+        //print('<script>window.location.href="admin.php?page=fl"</script>');
 
     }
 
@@ -295,7 +296,9 @@ class Football_League_Admin
             if ($team) {
 
                 $wpdb->update(TEAMS_TABLE, $team_data, array('ID' => $team));
-                print('<script>window.location.href="admin.php?page=fl"</script>');
+                //wp_redirect('?page=fl');
+                wp_redirect_admin_locations('?page=fl');
+                //print('<script>window.location.href="admin.php?page=fl"</script>');
                 return true;
                 
             } 

@@ -1,0 +1,244 @@
+.eflw-teamcards-container {
+  display: -ms-grid;
+  display: grid;
+  width: 100%;
+  -ms-grid-columns: (minmax(280px, 1fr))[auto-fill];
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  min-height: 100vh;
+  gap: 10px;
+}
+
+.eflw-teamcards-container * {
+  margin: 0;
+  padding: 0;
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+  color: #555;
+  display: relative;
+}
+
+.eflw-teamcards-container .eflw-team-card {
+  position: relative;
+  width: 280px;
+  height: 260px;
+  border-radius: 10px;
+  border-color: #eee;
+  border-width: 1px;
+  border-style: solid;
+  background: white;
+  -webkit-transition-duration: .3s;
+          transition-duration: .3s;
+  margin: 30px auto;
+}
+
+.eflw-teamcards-container .eflw-team-card.shadow {
+  -webkit-box-shadow: 0px 5px 5px rgba(0, 0, 0, 0.15);
+          box-shadow: 0px 5px 5px rgba(0, 0, 0, 0.15);
+}
+
+.eflw-teamcards-container .eflw-team-card:hover {
+  -webkit-transition-duration: .3s;
+          transition-duration: .3s;
+}
+
+.eflw-teamcards-container .eflw-team-card:hover.shadow {
+  -webkit-box-shadow: 0px 10px 15px rgba(0, 0, 0, 0.15);
+          box-shadow: 0px 10px 15px rgba(0, 0, 0, 0.15);
+}
+
+.eflw-teamcards-container .eflw-team-card:hover .content {
+  -webkit-transition-duration: .3s;
+          transition-duration: .3s;
+  height: 100%;
+  top: 15%;
+}
+
+.eflw-teamcards-container .eflw-team-card:hover .content .headre h2 {
+  font-size: 1.2em;
+}
+
+.eflw-teamcards-container .eflw-team-card:hover .content .footer button.show-more {
+  -webkit-transition-duration: .4s;
+          transition-duration: .4s;
+  -webkit-transition-delay: .15s;
+          transition-delay: .15s;
+  opacity: 1;
+}
+
+.eflw-teamcards-container .eflw-team-card:hover .imgbox {
+  -webkit-transition-duration: .3s;
+          transition-duration: .3s;
+  width: 100px;
+  height: 100px;
+}
+
+.eflw-teamcards-container .eflw-team-card div.imgbox {
+  -webkit-transition-duration: .3s;
+          transition-duration: .3s;
+  -webkit-box-shadow: 0px 5px 5px rgba(0, 0, 0, 0.15);
+          box-shadow: 0px 5px 5px rgba(0, 0, 0, 0.15);
+  position: absolute;
+  width: 85px;
+  height: 85px;
+  aspect-ratio: 1;
+  padding: 5px;
+  background: #fff;
+  border-radius: 10px;
+  border-color: #eee;
+  border-width: 1px;
+  border-style: solid;
+  left: 50%;
+  top: 0;
+  -webkit-transform: translateX(-50%) translateY(-50%);
+          transform: translateX(-50%) translateY(-50%);
+  -webkit-transform-origin: 50%;
+          transform-origin: 50%;
+  overflow: hidden;
+}
+
+.eflw-teamcards-container .eflw-team-card div.imgbox img {
+  position: relative;
+  top: 0px;
+  left: 0px;
+  width: 100%;
+  height: 100%;
+  -o-object-fit: contain;
+     object-fit: contain;
+}
+
+.eflw-teamcards-container .eflw-team-card .content {
+  -webkit-transition-duration: .3s;
+          transition-duration: .3s;
+  position: absolute;
+  width: 100%;
+  height: 70%;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: start;
+      -ms-flex-align: start;
+          align-items: flex-start;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  overflow: hidden;
+  top: 20%;
+}
+
+.eflw-teamcards-container .eflw-team-card .content .header {
+  text-align: center;
+  padding: 30px 20px 0px 20px;
+  width: 100%;
+  -webkit-transition: .5s;
+  transition: .5s;
+}
+
+.eflw-teamcards-container .eflw-team-card .content .header h2 {
+  font-size: 1.2em;
+  font-weight: 600;
+  color: #555;
+  line-height: 1.2em;
+}
+
+.eflw-teamcards-container .eflw-team-card .content .header span {
+  font-size: 1em;
+  font-weight: 500;
+  opacity: .5;
+}
+
+.eflw-teamcards-container .eflw-team-card .content .body {
+  text-align: center;
+  max-height: 50px;
+  overflow: hidden;
+}
+
+.eflw-teamcards-container .eflw-team-card .content .footer {
+  -webkit-transition-duration: .15s;
+          transition-duration: .15s;
+  padding: 20px;
+  width: 100%;
+  text-align: center;
+}
+
+.eflw-teamcards-container .eflw-team-card .content .footer * {
+  font-size: .8em;
+}
+
+.eflw-teamcards-container .eflw-team-card .content .footer button.show-more {
+  opacity: 0;
+  background-color: #555;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  margin: 15px auto;
+  cursor: pointer;
+  border-radius: 5px;
+  -webkit-transition: .3s;
+  transition: .3s;
+}
+
+.eflw-teamcards-container .eflw-team-card .content .footer button.show-more:hover {
+  -webkit-transition: .3s;
+  transition: .3s;
+  background-color: #999;
+}
+
+.history-container {
+  display: none;
+  opacity: 0;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  -webkit-transform: translateX(-50%) translateY(-50%);
+          transform: translateX(-50%) translateY(-50%);
+  width: 80%;
+  height: 500px;
+  padding: 50px 5%;
+  background-color: #fff;
+  border-radius: 10px;
+  border-color: #eee;
+  border-style: solid;
+  border-width: 1px;
+  -webkit-box-shadow: 0 15px 15px rgba(0, 0, 0, 0.3);
+          box-shadow: 0 15px 15px rgba(0, 0, 0, 0.3);
+  z-index: 999;
+  -ms-grid-rows: 1fr 10fr 1fr;
+      grid-template-rows: 1fr 10fr 1fr;
+  -webkit-transition: opacity .3s;
+  transition: opacity .3s;
+}
+
+.history-container.show {
+  display: -ms-grid;
+  display: grid;
+  opacity: 1;
+  -webkit-transition: opacity .3s;
+  transition: opacity .3s;
+}
+
+.history-container h3 {
+  border-bottom: #eee solid 1px;
+}
+
+.history-container button.show-more {
+  background-color: #555;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  margin: 15px auto;
+  cursor: pointer;
+  border-radius: 5px;
+  -webkit-transition: .3s;
+  transition: .3s;
+}
+
+.history-container button.show-more:hover {
+  -webkit-transition: .3s;
+  transition: .3s;
+  background-color: #999;
+}
+/*# sourceMappingURL=efl_style.css.map */

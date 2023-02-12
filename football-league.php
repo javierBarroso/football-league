@@ -87,6 +87,17 @@ register_activation_hook(__FILE__, 'activate_football_league');
 register_deactivation_hook(__FILE__, 'deactivate_football_league');
 
 
+function ele_football_league(){
+
+    require_once(__DIR__.'/public/class-football-league-public.php');
+
+    Football_League_Public::instance();
+
+    
+
+}
+
+add_action('plugin_loaded', 'ele_football_league');
 /**
  * Start pluging
  *

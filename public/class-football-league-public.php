@@ -5,9 +5,9 @@ if (!defined('ABSPATH')) {
 	exit();
 }
 
-if ( ! function_exists( 'get_plugins' ) ) {
+/* if ( ! function_exists( 'get_plugins' ) ) {
 	require_once ABSPATH . 'wp-admin/includes/plugin.php';
-}
+} */
 
 final class Football_League_Public
 {
@@ -134,9 +134,9 @@ final class Football_League_Public
 	public function register_widgets($widgets_manager)
 	{
 
-		require_once(__DIR__ . '/widgets/football-league-widget.php');
+		require_once(__DIR__ . '/widget/football-league-widget.php');
 
-		$widgets_manager->register(new \Digital_Clock());
+		$widgets_manager->register(new Football_League_Widget());
 	}
 
 
@@ -144,7 +144,7 @@ final class Football_League_Public
 	{
 
 		$elements_manager->add_category(
-			'jbplugins',
+			'jb-footbal-league',
 			[
 				'title' => esc_html__('Football League', 'football-league'),
 				'icon' => 'fa fa-plug',
@@ -152,15 +152,86 @@ final class Football_League_Public
 		);
 	}
 
-	public function get_teams(){
+	public function get_teams( $query_by, $include ){
 
 		global $wpdb;
 
-        $query_get_teams = "SELECT * FROM " . TEAMS_TABLE;
+		$select_condition = '';
+
+		switch($query_by){
+			case 'league':
+				$select_condition = "WHERE league_id = " . $include;
+				break;
+		}
+
+        $query_get_teams = "SELECT * FROM " . TEAMS_TABLE . " " . $select_condition;
 
         $teams = $wpdb->get_results($query_get_teams);
 
         return $teams;
 
 	}
+	public function get_league($league_id){
+
+		global $wpdb;
+
+        $query_get_league = "SELECT * FROM " . LEAGUES_TABLE . " WHERE ID = " . $league_id;
+
+        $league = $wpdb->get_results($query_get_league);
+		
+        return $league[0];
+
+	}
+	public function get_leagues(){
+
+		global $wpdb;
+
+        $query_get_leagues = "SELECT * FROM " . LEAGUES_TABLE;
+
+        $league = $wpdb->get_results($query_get_leagues);
+		
+        return $league;
+
+	}
+
+	public function enqueue_styles()
+    {
+        /**
+         * This function is provided for demonstration purposes only.
+        *
+        * An instance of this class should be passed to the run() function
+        * defined in Plugin_Name_Loader as all of the hooks are defined
+        * in that particular class.
+        *
+        * The Plugin_Name_Loader will then create the relationship
+        * between the defined hooks and the functions defined in this
+        * class.
+        */
+
+        //wp_enqueue_style($this->plugin_name, plugin_dir_url(__FILE__) . 'css/football-league-admin.css', array(), $this->version, 'all');
+
+    }
+
+    /**
+     * Register the JavaScript for the admin area.
+    *
+    * @since    1.0.0
+    */
+    public function enqueue_scripts()
+    {
+
+        /**
+         * This function is provided for demonstration purposes only.
+        *
+        * An instance of this class should be passed to the run() function
+        * defined in Plugin_Name_Loader as all of the hooks are defined
+        * in that particular class.
+        *
+        * The Plugin_Name_Loader will then create the relationship
+        * between the defined hooks and the functions defined in this
+        * class.
+        */
+
+        //wp_enqueue_script($this->plugin_name, plugin_dir_url(__FILE__) . 'js/football-league-admin.js', array('jquery'), $this->version, false);
+    }
 }

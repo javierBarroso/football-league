@@ -3,27 +3,32 @@
 use Elementor\Widget_Base;
 use Elementor\Controls_Manager;
 use Elementor\Core\Kits\Documents\Tabs\Global_Typography;
+use Elementor\Group_Control_Border;
 use Elementor\Group_Control_Typography;
 
-class Digital_Clock extends Widget_Base
+class Football_League_Widget extends Widget_Base
 {
+
+    private $fl_public;
 
     public function __construct($data = array(), $args = null)
     {
+        $this->fl_public = new Football_League_Public();
+
         parent::__construct($data, $args);
 
-        wp_enqueue_style('wn-dclock-css', plugin_dir_url(__FILE__) . '/css/dClock_style.css');
-        wp_enqueue_script('wn-dclock-js', plugin_dir_url(__FILE__) . '/js/dClock_script.js');
+        wp_enqueue_style('jb-efl-css', plugin_dir_url(__FILE__) . '/css/efl_style.css');
+        wp_enqueue_script('jb-efl-js', plugin_dir_url(__FILE__) . '/js/efl_script.js');
     }
 
     public function get_name()
     {
-        return 'ele-dclock';
+        return 'football-league';
     }
 
     public function get_title()
     {
-        return esc_html__('Digital Clock', 'ele-digital-clock');
+        return esc_html__('Footbal League', 'football-league');
     }
 
     public function get_icon()
@@ -37,7 +42,7 @@ class Digital_Clock extends Widget_Base
 
     public function get_categories()
     {
-        return ['jbplugins'];
+        return ['jb-footbal-league'];
     }
 
     public function get_keywords()
@@ -51,329 +56,451 @@ class Digital_Clock extends Widget_Base
         $this->start_controls_section(
             'layout_section',
             [
-                'label' => esc_html__('Content', 'ele-digital-clock'),
+                'label' => esc_html__('Query', 'football-league'),
                 'tab' => Controls_Manager::TAB_CONTENT,
             ]
         );
-
         $this->add_control(
-            'head-text',
+            'query_select',
             [
-                'label' => esc_html('Header Text', 'ele-digital-clock'),
-                'type' => Controls_Manager::TEXT,
-                'default' => 'your time is now',
-                'dynamic' => [
-                    'active' => true
-                ]
-
-            ]
-        );
-        $this->add_control(
-            'hour-text',
-            [
-                'label' => esc_html('Hour Text', 'ele-digital-clock'),
-                'type' => Controls_Manager::TEXT,
-                'default' => 'Hours',
-                'dynamic' => [
-                    'active' => true
-                ]
-
-            ]
-        );
-        $this->add_control(
-            'minute-text',
-            [
-                'label' => esc_html('Minute Text', 'ele-digital-clock'),
-                'type' => Controls_Manager::TEXT,
-                'default' => 'Minutes',
-                'dynamic' => [
-                    'active' => true
-                ]
-
-            ]
-        );
-        $this->add_control(
-            'second-text',
-            [
-                'label' => esc_html('Second Text', 'ele-digital-clock'),
-                'type' => Controls_Manager::TEXT,
-                'default' => 'Seconds',
-                'dynamic' => [
-                    'active' => true
-                ]
-
-            ]
-        );
-
-        $this->add_control(
-            'alignment',
-            [
-                'label' => esc_html__('Alignment', 'ele-digital-clock'),
-                'type' => Controls_Manager::CHOOSE,
+                'label' => esc_html( 'Query by', 'football-league' ),
+                'type' => Controls_Manager::SELECT,
                 'options' => [
-                    'left' => [
-                        'title' => esc_html__('flex-start', 'ele-digital-clock'),
-                        'icon' => 'eicon-text-align-left',
-                    ],
-                    'center' => [
-                        'title' => esc_html__('Center', 'ele-digital-clock'),
-                        'icon' => 'eicon-text-align-center',
-                    ],
-                    'right' => [
-                        'title' => esc_html__('flex-end', 'ele-digital-clock'),
-                        'icon' => 'eicon-text-align-right',
-                    ],
+                    'all' => 'All',
+                    'league' => 'League',
+                    'keyword' => 'Keyword'
                 ],
-                'default' => 'center',
-                'selectors' => [
-                    '{{WRAPPER}} .wn-dclock-container' => 'justify-content: {{VALUE}}',
-                ],
+                'default' => 'all'
             ]
         );
 
+        $leagues = $this->fl_public->get_leagues();
+        $leagues_options = [];
+        foreach ($leagues as $league) {
+            $leagues_options[$league->ID] = $league->name;
+        }
+        $this->add_control(
+            'select_league',
+            [
+                'label' => esc_html( 'Select League', 'football-league' ),
+                'type' => Controls_Manager::SELECT,
+                'options' => $leagues_options,
+                'condition' => [
+                    'query_select' => 'league',
+                ]
+            ]
+        );
+        
+
         $this->end_controls_section();
 
+        
+        
+
+
+        /**
+         * Card Section
+         */
         $this->start_controls_section(
-            'font_section',
+            'card_section',
             [
-                'label' => esc_html__('Font', 'ele-digital-clock'),
+                'label' => esc_html__('Card', 'football-league'),
                 'tab' => Controls_Manager::TAB_STYLE,
             ]
         );
 
-        $this->add_group_control(
-            Group_Control_Typography::get_type(),
+        $this->add_control(
+            'card-color',
             [
-                'label' => esc_html__('Header Font', 'ele-digital-clock'),
-                'name' => 'typography_header',
-                'global' => [
-                    'default' => Global_Typography::TYPOGRAPHY_PRIMARY,
-                ],
-                'selector' => '{{WRAPPER}} .wn-dclock-container .wn-dclock h2',
-                'fields_options' => [
-                    'typography' => ['default' => 'yes'],
-                    'font_size' => ['default' => ['size' => 25]],
-                    'font_weight' => ['default' => 300],
-                ],
-            ]
-        );
-
-        $this->add_group_control(
-            Group_Control_Typography::get_type(),
-            [
-                'label' => esc_html__('AM PM Font', 'ele-digital-clock'),
-                'name' => 'typography_anpm',
-                'global' => [
-                    'default' => Global_Typography::TYPOGRAPHY_PRIMARY,
-                ],
-                'selector' => '{{WRAPPER}} #time .cell-cont .cell #am-tag',
-                'fields_options' => [
-                    'typography' => ['default' => 'yes'],
-                    'font_size' => ['default' => ['size' => 14]],
-                    'font_weight' => ['default' => 300],
-                    'line-height' => ['default' => 1],
-                ],
-            ]
-        );
-
-        $this->add_group_control(
-            Group_Control_Typography::get_type(),
-            [
-                'label' => esc_html__('Clock Font', 'ele-digital-clock'),
-                'name' => 'typography_clock',
-                'global' => [
-                    'default' => Global_Typography::TYPOGRAPHY_PRIMARY, 'size' => 25
-                ],
-                'selector' => '{{WRAPPER}} #time .cell-cont .cell',
-                'fields_options' => [
-                    'typography' => ['default' => 'yes'],
-                    'font_size' => ['default' => ['size' => 65]],
-                    'font_weight' => ['default' => 200],
-                ],
-            ]
-        );
-
-        $this->add_group_control(
-            Group_Control_Typography::get_type(),
-            [
-                'label' => esc_html__('Tags Font', 'ele-digital-clock'),
-                'name' => 'typography_tag',
-                'global' => [
-                    'default' => Global_Typography::TYPOGRAPHY_PRIMARY,
-                ],
-                'selector' => '{{WRAPPER}} #time .cell-cont .tag',
-                'separator' => 'before',
-                'fields_options' => [
-                    'typography' => ['default' => 'yes'],
-                    'font_size' => ['default' => ['size' => 14]],
-                    'font_weight' => ['default' => 300],
-                ],
-            ]
-        );
-
-        $this->end_controls_section();
-
-        $this->start_controls_section(
-            'size_section',
-            [
-                'label' => esc_html__('Size', 'ele-digital-clock'),
-                'tab' => Controls_Manager::TAB_STYLE,
-            ]
-        );
-
-        $this->add_responsive_control(
-            'clock-width',
-            [
-                'label' => esc_html('Clock Width', 'ele-digital-clock'),
-                'type' => Controls_Manager::SLIDER,
-                'size_units' => ['px'],
-                'range' => ['px' => ['min' => 5, 'max' => 900]],
-                'default' => [
-                    'unit' => 'px',
-                    'size' => 3,
-                ],
+                'label' => esc_html('Background Color', 'football-league'),
+                'type' => Controls_Manager::COLOR,
+                'default' => '#fff',
                 'selectors' => [
-                    '{{WRAPPER}} #time .cell-cont' => 'width:{{SIZE}}{{UNIT}}',
+                    '{{WRAPPER}} .eflw-team-card' => 'background:{{VALUE}}'
+                ]
+            ]
+        );
+        $this->add_control(
+            'border-color',
+            [
+                'label' => esc_html('Border Color', 'football-league'),
+                'type' => Controls_Manager::COLOR,
+                'default' => '#eee',
+                'selectors' => [
+                    '{{WRAPPER}} .eflw-team-card' => 'border-color:{{VALUE}}'
                 ]
             ]
         );
         $this->add_responsive_control(
-            'clock-height',
+            'border-width',
             [
-                'label' => esc_html('Clock Height', 'ele-digital-clock'),
-                'type' => Controls_Manager::SLIDER,
-                'size_units' => ['px'],
-                'range' => ['px' => ['min' => 0, 'max' => 100]],
-                'default' => [
-                    'unit' => 'px',
-                    'size' => 14,
-                ],
-                'selectors' => [
-                    '{{WRAPPER}} #time .cell-cont .cell' => 'padding:{{SIZE}}{{UNIT}} 0',
-                ]
-            ]
-        );
-
-        $this->add_responsive_control(
-            'cell-height',
-            [
-                'label' => esc_html('Tag Height', 'ele-digital-clock'),
+                'label' => esc_html('Border Width', 'football-league'),
                 'type' => Controls_Manager::SLIDER,
                 'size_units' => ['px'],
                 'range' => ['px' => ['min' => 0, 'max' => 50]],
                 'default' => [
                     'unit' => 'px',
-                    'size' => 5,
+                    'size' => 1,
                 ],
                 'selectors' => [
-                    '{{WRAPPER}} #time .cell-cont .tag' => 'padding:{{SIZE}}{{UNIT}} 0',
+                    '{{WRAPPER}} .eflw-team-card' => 'border-width:{{SIZE}}{{UNIT}}',
                 ]
             ]
         );
-
+        $this->add_responsive_control(
+            'border-radius',
+            [
+                'label' => esc_html('Border Radius', 'football-league'),
+                'type' => Controls_Manager::SLIDER,
+                'size_units' => ['px'],
+                'range' => ['px' => ['min' => 0, 'max' => 200]],
+                'default' => [
+                    'unit' => 'px',
+                    'size' => 10,
+                ],
+                'selectors' => [
+                    '{{WRAPPER}} .eflw-team-card' => 'border-radius:{{SIZE}}{{UNIT}}',
+                ]
+            ]
+        );
+        $this->add_responsive_control(
+            'card-shadow',
+            [
+                'label' => esc_html('Card Shadow', 'football-league'),
+                'type' => Controls_Manager::SWITCHER ,
+                'default' => 'yes',
+                'label_on' => 'on',
+                'label_off' => 'off',
+            ]
+        );
+        
         $this->end_controls_section();
 
+        /**
+         * Content section
+         */
         $this->start_controls_section(
-            'color_section',
+            'content_section',
             [
-                'label' => esc_html__('Color', 'ele-digital-clock'),
+                'label' => esc_html__('Content', 'football-league'),
                 'tab' => Controls_Manager::TAB_STYLE,
             ]
         );
 
         $this->add_control(
-            'header-color',
+			'header_style',
+			[
+				'label' => esc_html__( 'Team Name', 'football-league' ),
+				'type' => Controls_Manager::HEADING,
+				'separator' => 'before',
+			]
+		);
+
+        $this->add_control(
+            'team-name-color',
             [
-                'label' => esc_html('Header Color', 'ele-digital-clock'),
+                'label' => esc_html('Color', 'football-league'),
                 'type' => Controls_Manager::COLOR,
-                'default' => '#333',
+                'default' => '#555',
                 'selectors' => [
-                    '{{WRAPPER}} .wn-dclock h2' => 'color:{{VALUE}}'
+                    '{{WRAPPER}} .header h2' => 'color:{{VALUE}}'
                 ]
             ]
         );
 
-        $this->add_control(
-            'font-color',
+        $this->add_group_control(
+            Group_Control_Typography::get_type(),
             [
-                'label' => esc_html('Font Color', 'ele-digital-clock'),
-                'type' => Controls_Manager::COLOR,
-                'default' => '#fff',
-                'selectors' => [
-                    '{{WRAPPER}} #time .cell-cont .tag' => 'color:{{VALUE}}',
-                    '{{WRAPPER}} #time .cell-cont .cell' => 'color:{{VALUE}}',
-                    '{{WRAPPER}} #time #hcont #hour #am-tag' => 'color:{{VALUE}}'
-                ]
+                'label' => esc_html__('Typografy', 'football-league'),
+                'name' => 'typography_team_name',
+                'global' => [
+                    'default' => Global_Typography::TYPOGRAPHY_PRIMARY,
+                ],
+                'selector' => '{{WRAPPER}} .header h2',
+                'separator' => 'before',
+                'fields_options' => [
+                    'typography' => ['default' => 'yes'],
+                    'font_size' => ['default' => ['size' => 1.2, 'unit' => 'em']],
+                    'font_weight' => ['default' => 600],
+                ],
             ]
         );
 
         $this->add_control(
-            'hour-background-color',
-            [
-                'label' => esc_html('Hour Background Color', 'ele-digital-clock'),
-                'type' => Controls_Manager::COLOR,
-                'default' => '#2196f3',
-                'selectors' => [
-                    '{{WRAPPER}} #time #hcont' => 'background-color:{{VALUE}}'
-                ]
-            ]
-        );
+			'nickname_style',
+			[
+				'label' => esc_html__( 'Team Nickname', 'football-league' ),
+				'type' => Controls_Manager::HEADING,
+				'separator' => 'before',
+			]
+		);
+
         $this->add_control(
-            'minute-background-color',
+            'team-nickname-color',
             [
-                'label' => esc_html('Minute Background Color', 'ele-digital-clock'),
+                'label' => esc_html('Color', 'football-league'),
                 'type' => Controls_Manager::COLOR,
-                'default' => '#2196f3',
+                'default' => '#555',
                 'selectors' => [
-                    '{{WRAPPER}} #time #mcont' => 'background-color:{{VALUE}}'
+                    '{{WRAPPER}} .header span' => 'color:{{VALUE}}'
                 ]
             ]
         );
+
+        $this->add_group_control(
+            Group_Control_Typography::get_type(),
+            [
+                'label' => esc_html__('Typografy', 'football-league'),
+                'name' => 'typography_team_nickname',
+                'global' => [
+                    'default' => Global_Typography::TYPOGRAPHY_PRIMARY,
+                ],
+                'selector' => '{{WRAPPER}} .header span',
+                'separator' => 'before',
+                'fields_options' => [
+                    'typography' => ['default' => 'yes'],
+                    'font_size' => ['default' => ['size' => 1, 'unit' => 'em']],
+                    'font_weight' => ['default' => 500],
+                ],
+            ]
+        );
+
         $this->add_control(
-            'second-background-color',
-            [
-                'label' => esc_html('Second Background Color', 'ele-digital-clock'),
-                'type' => Controls_Manager::COLOR,
-                'default' => '#ff006a',
-                'selectors' => [
-                    '{{WRAPPER}} #time #scont' => 'background-color:{{VALUE}}'
-                ]
-            ]
-        );
+			'league_label_style',
+			[
+				'label' => esc_html__( 'League Label', 'football-league' ),
+				'type' => Controls_Manager::HEADING,
+				'separator' => 'before',
+			]
+		);
+
         $this->add_control(
-            'hour-tag-background-color',
+            'league-label-color',
             [
-                'label' => esc_html('Hour Tag Background Color', 'ele-digital-clock'),
+                'label' => esc_html('Color', 'football-league'),
                 'type' => Controls_Manager::COLOR,
-                'default' => '#127fd6',
+                'default' => '#555',
                 'selectors' => [
-                    '{{WRAPPER}} #time #htag' => 'background-color:{{VALUE}}'
+                    '{{WRAPPER}} .footer h4' => 'color:{{VALUE}}'
                 ]
             ]
         );
+
+        $this->add_group_control(
+            Group_Control_Typography::get_type(),
+            [
+                'label' => esc_html__('Typografy', 'football-league'),
+                'name' => 'typography_league_label_nickname',
+                'global' => [
+                    'default' => Global_Typography::TYPOGRAPHY_PRIMARY,
+                ],
+                'selector' => '{{WRAPPER}} .footer h4',
+                'separator' => 'before',
+                'fields_options' => [
+                    'typography' => ['default' => 'yes'],
+                    'font_size' => ['default' => ['size' => 1, 'unit' => 'em']],
+                    'font_weight' => ['default' => 500],
+                ],
+            ]
+        );
+
         $this->add_control(
-            'minute-tag-background-color',
-            [
-                'label' => esc_html('Minute Tag Background Color', 'ele-digital-clock'),
-                'type' => Controls_Manager::COLOR,
-                'default' => '#127fd6',
-                'selectors' => [
-                    '{{WRAPPER}} #time #mtag' => 'background-color:{{VALUE}}'
-                ]
-            ]
-        );
+			'league_name_style',
+			[
+				'label' => esc_html__( 'League Name', 'football-league' ),
+				'type' => Controls_Manager::HEADING,
+				'separator' => 'before',
+			]
+		);
+
         $this->add_control(
-            'secund-tag-background-color',
+            'league-name-color',
             [
-                'label' => esc_html('Second Tag Background Color', 'ele-digital-clock'),
+                'label' => esc_html('Color', 'football-league'),
                 'type' => Controls_Manager::COLOR,
-                'default' => '#cc0055',
+                'default' => '#555',
                 'selectors' => [
-                    '{{WRAPPER}} #time #stag' => 'background-color:{{VALUE}}'
+                    '{{WRAPPER}} .footer p' => 'color:{{VALUE}}'
                 ]
             ]
         );
+
+        $this->add_group_control(
+            Group_Control_Typography::get_type(),
+            [
+                'label' => esc_html__('Typografy', 'football-league'),
+                'name' => 'typography_league_name_nickname',
+                'global' => [
+                    'default' => Global_Typography::TYPOGRAPHY_PRIMARY,
+                ],
+                'selector' => '{{WRAPPER}} .footer p',
+                'separator' => 'before',
+                'fields_options' => [
+                    'typography' => ['default' => 'yes'],
+                    'font_size' => ['default' => ['size' => 1, 'unit' => 'em']],
+                    'font_weight' => ['default' => 500],
+                ],
+            ]
+        );
+
         
+
+        $this->end_controls_section();
+
+        /**
+         * button section
+         */
+        
+         $this->start_controls_section(
+            'button_section',
+            [
+                'label' => esc_html__('Button', 'football-league'),
+                'tab' => Controls_Manager::TAB_STYLE,
+            ]
+        );
+
+        $this->add_control(
+			'button_text',
+			[
+				'label' => esc_html__( 'Button Text', 'football-league' ),
+				'type' => Controls_Manager::TEXT,
+				'default' => esc_html__( 'Show more', 'football-league' ),
+				'dynamic' => [
+					'active' => true,
+				],
+			]
+		);
+
+        $this->start_controls_tabs( 'tabs_button_style' );
+
+		$this->start_controls_tab(
+			'tab_button_normal',
+			[
+				'label' => esc_html__( 'Normal', 'football-league' ),
+				
+			]
+		);
+
+		$this->add_control(
+			'button_text_color',
+			[
+				'label' => esc_html__( 'Text Color', 'football-league' ),
+				'type' => Controls_Manager::COLOR,
+				'default' => '',
+				'selectors' => [
+					'{{WRAPPER}} .footer button.show-more' => 'color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Typography::get_type(),
+			[
+				'name' => 'button_typography',
+				'global' => [
+					'default' => Global_Typography::TYPOGRAPHY_ACCENT,
+				],
+				'selector' => '{{WRAPPER}} .footer button.show-more',
+			]
+		);
+
+		$this->add_control(
+			'button_background_color',
+			[
+				'label' => esc_html__( 'Background Color', 'football-league' ),
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .footer button.show-more' => 'background: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Border::get_type(), [
+				'name' => 'button_border',
+				'selector' => '{{WRAPPER}} .footer button.show-more',
+				'separator' => 'before',
+			]
+		);
+
+		$this->add_control(
+			'button_border_radius',
+			[
+				'label' => esc_html__( 'Border Radius', 'football-league' ),
+				'type' => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', '%', 'em' ],
+				'selectors' => [
+					'{{WRAPPER}} .footer button.show-more' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->add_control(
+			'button_text_padding',
+			[
+				'label' => esc_html__( 'Text Padding', 'football-league' ),
+				'type' => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', 'em', '%' ],
+				'selectors' => [
+					'{{WRAPPER}} .footer button.show-more' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->end_controls_tab();
+
+		$this->start_controls_tab(
+			'tab_button_hover',
+			[
+				'label' => esc_html__( 'Hover', 'football-league' ),
+			]
+		);
+
+		$this->add_control(
+			'button_hover_color',
+			[
+				'label' => esc_html__( 'Text Color', 'football-league' ),
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .footer button.show-more:hover' => 'color: {{VALUE}};',
+				],
+			]
+		);
+
+		
+
+		$this->add_control(
+			'button_hover_background_color',
+			[
+				'label' => esc_html__( 'Background Color', 'football-league' ),
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .footer button.show-more:hover' => 'background: {{VALUE}};',
+				],
+			]
+		);
+		$this->add_control(
+			'button_hover_border_color',
+			[
+				'label' => esc_html__( 'Border Color', 'football-league' ),
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .footer button.show-more:hover' => 'border-color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_control(
+			'button_hover_animation',
+			[
+				'label' => esc_html__( 'Animation', 'football-league' ),
+				'type' => Controls_Manager::HOVER_ANIMATION,
+			]
+		);
+
+		$this->end_controls_tab();
+
+		$this->end_controls_tabs();
 
         $this->end_controls_section();
     }
@@ -381,29 +508,42 @@ class Digital_Clock extends Widget_Base
     protected function render()
     {
 
-        $teams = new Football_League_Public();
-
         
 
         $settings = $this->get_settings_for_display();
+        
+        $teams = $this->fl_public->get_teams( $settings['query_select'], $settings['select_league'] );
 
-        $html = '<section class="wn-dclock-container">
-        <script>setInterval(digital_clock, 1000);</script>
-        <div class="wn-dclock">
-            <h2>' . esc_html($settings['head-text']) . '</h2>
-            <div id="time">
-                <div class="cell-cont" id="hcont">
-                    <div class="cell" id="hour">00<span id="am-tag"></span></div>
-                    <div class="tag" id="htag">' . esc_html($settings['hour-text']) . '</div>
-                </div>
-                <div class="cell-cont" id="mcont"><div class="cell" id="minute">00</div><div class="tag" id="mtag">' . esc_html($settings['minute-text']) . '</div></div>
-                <div class="cell-cont" id="scont"><div class="cell" id="second">00</div><div class="tag" id="stag">' . esc_html($settings['second-text']) . '</div></div>
-                
-            </div>
-        </div>
-    </section>';
+        $html = '<section class="eflw-teamcards-container">';
+
+        foreach ($teams as $key => $team) {
+            $html .= '<div class="eflw-team-card ' . esc_attr($settings['card-shadow'] == 'yes' ? 'shadow' : '') . '">
+                        <div class="imgbox">
+                            <img src="' . esc_attr( $team->logo ? $team->logo : FOOTBALL_LEAGUE_URL . 'admin/img/logo_placeholder.svg' ) . '" alt="" srcset="">
+                        </div>
+                        <div class="content">
+                            <div class="header">
+                                <h2>' . esc_html( $team->name ) . '</h2><span>' . esc_html( $team->nickname ) . '</span>
+                            </div>
+                            <div class="footer">
+                                <h4>League</h4>
+                                <p>' . esc_html( $this->fl_public->get_league($team->league_id)->name ) . '</p>
+                                <button class="show-more" onclick="show_history(\'' . esc_html($team->name) . '\', \'' . esc_html($team->history) . '\')">' . esc_html( $settings['button_text'] ) . '</button>
+                            </div>
+                        </div>
+                    </div>';
+        }
+        $html .= '</section>';
+
+        $html .= '<div class="history-container" id="history-container">
+                    <h3 id="team-name-history"></h3>
+                    
+                    <p id="team-history"></p>
+                    <button onclick="close_history()" class="show-more">Close</button>
+                    </div>';
 
         echo $html;
+        
     }
 }
 

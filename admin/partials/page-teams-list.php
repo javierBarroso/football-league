@@ -68,3 +68,22 @@ $delete_team = 'admin.php?page=fl&action=delete&team=';
     </div>
 </div>
 
+<section class="eflw-teamcards-container">
+    <div class="eflw-team-card">
+        <div class="imgbox">
+            <img src="<?= FOOTBALL_LEAGUE_URL . 'admin/img/logo_placeholder.svg' ?>" alt="" srcset="">
+        </div>
+        <div class="content">
+            <div class="header">
+                <h2>Barcelona</h2><span>Barca</span>
+            </div>
+            
+            <div class="footer">
+                <h4>League</h4>
+                <p>LaLiga</p>
+                <br>
+                <button>Show more</button>
+            </div>
+        </div>
+    </div>
+</section>
