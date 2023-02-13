@@ -66,7 +66,7 @@ class Football_League_Admin
             'manage_options',
             'fl',
             array($this, 'teams_list'),
-            null,
+            FOOTBALL_LEAGUE_URL . 'admin/img/trophy-svgrepo-com.svg',
             3
         );
         add_submenu_page(

@@ -2,6 +2,10 @@
   font-family: "poppins_jbg";
   src: url("/public/widget/font/Poppins-Light.ttf");
 }
+@font-face {
+  font-family: "widget_icon";
+  src: url("/public/widget/img/trophy-svgrepo-com.svg");
+}
 .eflw-teamcards-container {
   display: grid;
   width: 100%;

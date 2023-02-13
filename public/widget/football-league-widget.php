@@ -33,7 +33,7 @@ class Football_League_Widget extends Widget_Base
 
     public function get_icon()
     {
-        return 'eicon-clock-o';
+        return 'eicon-code';
     }
 
     public function get_custom_help_url()
