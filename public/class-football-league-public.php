@@ -33,6 +33,9 @@ final class Football_League_Public
 		if ($this->is_compatible() && add_action('admin_menu', array($this, 'elementor_version'))) {
 			add_action('elementor/init', [$this, 'init']);
 		}
+
+		$this->enqueue_styles();
+		$this->enqueue_scripts();
 	}
 
 	function elementor_version(){
@@ -193,6 +196,17 @@ final class Football_League_Public
         return $league;
 
 	}
+	public function get_all_teams(){
+
+		global $wpdb;
+
+        $query_get_teams = "SELECT * FROM " . TEAMS_TABLE;
+
+        $teams = $wpdb->get_results($query_get_teams);
+		
+        return $teams;
+
+	}
 
 	public function enqueue_styles()
     {
@@ -208,7 +222,7 @@ final class Football_League_Public
         * class.
         */
 
-        //wp_enqueue_style($this->plugin_name, plugin_dir_url(__FILE__) . 'css/football-league-admin.css', array(), $this->version, 'all');
+        wp_enqueue_style('jb-efl-css', plugin_dir_url(__FILE__) . 'widget/css/efl_style.css');
 
     }
 
@@ -232,6 +246,129 @@ final class Football_League_Public
         * class.
         */
 
-        //wp_enqueue_script($this->plugin_name, plugin_dir_url(__FILE__) . 'js/football-league-admin.js', array('jquery'), $this->version, false);
+        wp_enqueue_script('jb-efl-js', plugin_dir_url(__FILE__) . 'widget/js/efl_script.js', array(), '', true);
+		wp_localize_script( 'jb-efl-js', 'dcms_vars', ['ajaxurl' => admin_url('admin-ajax.php')] );
     }
+
+
 }
+
+add_action( 'wp_ajax_nopriv_show_all_teams', 'show_all_teams' );
+add_action( 'wp_ajax_show_all_teams', 'show_all_teams' );
+
+function show_all_teams(){
+
+	global $wpdb;
+	$html = "";
+
+	
+	$fl_public = new Football_League_Public();
+	
+	$teams = $fl_public->get_all_teams();
+
+	$html = '';
+
+	foreach ($teams as $key => $team) {
+		$html .= '<div class="eflw-team-card '. esc_attr( $_POST['settings_card_shadow'] ) . '">
+					<div class="imgbox">
+						<img src="' . esc_attr( $team->logo ? $team->logo : FOOTBALL_LEAGUE_URL . 'admin/img/logo_placeholder.svg' ) . '" alt="" srcset="">
+					</div>
+					<div class="content">
+						<div class="header">
+							<h2>' . esc_html( $team->name ) . '</h2><span>' . esc_html( $team->nickname ) . '</span>
+						</div>
+						<div class="footer">
+							<h4>League</h4>
+							<p>' . esc_html( $fl_public->get_league($team->league_id)->name ) . '</p>
+							<button class="show-more" onclick="show_history(\'' . esc_html($team->name) . '\', \'' . esc_html($team->history) . '\')">' . esc_html( $_POST['settings_button_text'] ) . '</button>
+						</div>
+					</div>
+				</div>';
+	}
+
+	echo $html;
+
+	die();
+}
+
+add_action( 'wp_ajax_nopriv_teams_by_league', 'query_teams_by_league' );
+add_action( 'wp_ajax_teams_by_league', 'query_teams_by_league' );
+
+function query_teams_by_league(){
+
+	global $wpdb;
+
+	$query_select_teams_by_league = "SELECT * FROM " . TEAMS_TABLE . " WHERE league_id = " . $_POST['league_id'];
+
+	$teams = $wpdb->get_results($query_select_teams_by_league);
+
+	$fl_public = new Football_League_Public();
+
+	$html = '';
+
+	
+
+	foreach ($teams as $key => $team) {
+		$html .= '<div class="eflw-team-card '. esc_attr( $_POST['settings_card_shadow'] ) . '">
+					<div class="imgbox">
+						<img src="' . esc_attr( $team->logo ? $team->logo : FOOTBALL_LEAGUE_URL . 'admin/img/logo_placeholder.svg' ) . '" alt="" srcset="">
+					</div>
+					<div class="content">
+						<div class="header">
+							<h2>' . esc_html( $team->name ) . '</h2><span>' . esc_html( $team->nickname ) . '</span>
+						</div>
+						<div class="footer">
+							<h4>League</h4>
+							<p>' . esc_html( $fl_public->get_league($team->league_id)->name ) . '</p>
+							<button class="show-more" onclick="show_history(\'' . esc_html($team->name) . '\', \'' . esc_html($team->history) . '\')">' . esc_html( $_POST['settings_button_text'] ) . '</button>
+						</div>
+					</div>
+				</div>';
+	}
+
+	echo $html;
+
+	die();
+}
+
+
+add_action( 'wp_ajax_nopriv_teams_by_keyword', 'query_teams_by_keyword' );
+add_action( 'wp_ajax_teams_by_keyword', 'query_teams_by_keyword' );
+
+function query_teams_by_keyword(){
+
+	global $wpdb;
+
+	$query_select_teams_by_keyword = "SELECT * FROM " . TEAMS_TABLE . " WHERE CONCAT(name, nickname, history) REGEXP '" . $_POST['keywords'] . "'";
+	
+	$teams = $wpdb->get_results($query_select_teams_by_keyword);
+
+	$fl_public = new Football_League_Public();
+
+	$html = '';
+
+	
+
+	foreach ($teams as $key => $team) {
+		$html .= '<div class="eflw-team-card '. esc_attr( $_POST['settings_card_shadow'] ) . '">
+					<div class="imgbox">
+						<img src="' . esc_attr( $team->logo ? $team->logo : FOOTBALL_LEAGUE_URL . 'admin/img/logo_placeholder.svg' ) . '" alt="" srcset="">
+					</div>
+					<div class="content">
+						<div class="header">
+							<h2>' . esc_html( $team->name ) . '</h2><span>' . esc_html( $team->nickname ) . '</span>
+						</div>
+						<div class="footer">
+							<h4>League</h4>
+							<p>' . esc_html( $fl_public->get_league($team->league_id)->name ) . '</p>
+							<button class="show-more" onclick="show_history(\'' . esc_html($team->name) . '\', \'' . esc_html($team->history) . '\')">' . esc_html( $_POST['settings_button_text'] ) . '</button>
+						</div>
+					</div>
+				</div>';
+	}
+
+	echo $html;
+
+	die();
+}
+

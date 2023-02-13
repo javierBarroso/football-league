@@ -68,6 +68,30 @@ $delete_team = 'admin.php?page=fl&action=delete&team=';
     </div>
 </div>
 
+
+<div class="eflw-teamcards-query">
+    <div class="select-team-input">
+        <span>Show teams</span>
+        
+        <label for="show-all">All</label>
+        <input onclick="show_team_select()" type="radio" name="show-team-by" id="show-all" value="all">
+        <label for="show-by-league">by League</label>
+        <input type="radio" name="show-team-by" id="show-by-league" value="league">
+        <label for="show-by-keyword">by Keyword</label>
+        <input type="radio" name="show-team-by" id="show-by-keyword" value="keyword">
+
+    </div>
+
+    <div class="selection-criteria">
+        <div class="select-league">
+
+            <select name="" id="">
+                <option value="">LaLiga</option>
+                <option value="">Bundesliga</option>
+            </select>
+        </div>
+    </div>
+</div>
 <section class="eflw-teamcards-container">
     <div class="eflw-team-card">
         <div class="imgbox">

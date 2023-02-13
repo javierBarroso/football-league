@@ -17,8 +17,8 @@ class Football_League_Widget extends Widget_Base
 
         parent::__construct($data, $args);
 
-        wp_enqueue_style('jb-efl-css', plugin_dir_url(__FILE__) . '/css/efl_style.css');
-        wp_enqueue_script('jb-efl-js', plugin_dir_url(__FILE__) . '/js/efl_script.js');
+        // wp_enqueue_style('jb-efl-css', plugin_dir_url(__FILE__) . '/css/efl_style.css');
+        // wp_enqueue_script('jb-efl-js', plugin_dir_url(__FILE__) . '/js/efl_script.js');
     }
 
     public function get_name()
@@ -221,7 +221,8 @@ class Football_League_Widget extends Widget_Base
                 'fields_options' => [
                     'typography' => ['default' => 'yes'],
                     'font_size' => ['default' => ['size' => 1.2, 'unit' => 'em']],
-                    'font_weight' => ['default' => 600],
+                    'font_weight' => ['default' => 400],
+                    'font_family' => ['default' => 'poppins']
                 ],
             ]
         );
@@ -260,7 +261,7 @@ class Football_League_Widget extends Widget_Base
                 'fields_options' => [
                     'typography' => ['default' => 'yes'],
                     'font_size' => ['default' => ['size' => 1, 'unit' => 'em']],
-                    'font_weight' => ['default' => 500],
+                    'font_weight' => ['default' => 300],
                 ],
             ]
         );
@@ -299,7 +300,7 @@ class Football_League_Widget extends Widget_Base
                 'fields_options' => [
                     'typography' => ['default' => 'yes'],
                     'font_size' => ['default' => ['size' => 1, 'unit' => 'em']],
-                    'font_weight' => ['default' => 500],
+                    'font_weight' => ['default' => 300],
                 ],
             ]
         );
@@ -338,7 +339,7 @@ class Football_League_Widget extends Widget_Base
                 'fields_options' => [
                     'typography' => ['default' => 'yes'],
                     'font_size' => ['default' => ['size' => 1, 'unit' => 'em']],
-                    'font_weight' => ['default' => 500],
+                    'font_weight' => ['default' => 300],
                 ],
             ]
         );
@@ -368,6 +369,9 @@ class Football_League_Widget extends Widget_Base
 				'dynamic' => [
 					'active' => true,
 				],
+                'selector'=>[
+                    '{{WRAPPER}} .footer button.show-more' => 'content: {{VALUE}};',
+                ]
 			]
 		);
 
@@ -514,7 +518,42 @@ class Football_League_Widget extends Widget_Base
         
         $teams = $this->fl_public->get_teams( $settings['query_select'], $settings['select_league'] );
 
-        $html = '<section class="eflw-teamcards-container">';
+        $leagues = $this->fl_public->get_leagues();
+
+        $league_option = '';
+
+        foreach ($leagues as $key => $league) {
+            $league_option .= '<option value="' . $league->ID . '">' . $league->name . '</option>';
+        }
+
+        $html = '<div class="eflw-teamcards-query">
+                    <div class="select-team-input">
+                        <span>Show teams</span>
+
+
+                        <input style="display:none;" id="settings-button-text" value="'.esc_attr($settings['button_text']).'"></input>
+                        <input style="display:none;" id="settings-card-shadow" value="'.esc_attr($settings['card-shadow'] == 'yes' ? 'shadow' : '').'"></input>
+
+
+                        <input checked class="show-by" type="radio" name="show-team-by" id="show-all" value="all">
+                        <label for="show-all">All</label>
+                        <input class="show-by" type="radio" name="show-team-by" id="show-by-league" value="league">
+                        <label for="show-by-league">by League</label>
+                        <input class="show-by" type="radio" name="show-team-by" id="show-by-keyword" value="keyword">
+                        <label for="show-by-keyword">by Keyword</label>
+                
+                    </div>
+                
+                    <div class="selection-criteria" id="selection-criteria">
+                        <div class="select-league" id="select-league" style="display:none;">
+                            <select name="" id=""><option>All Leagues</option>
+                                ' . $league_option . '
+                            </select>
+                        </div>
+                        <input id="keywords-input" style="display:none;"><span id="keywords-input-info" style="display:none;">separate keywords with commas</span>
+                    </div>
+                </div>';
+        $html .= '<section class="eflw-teamcards-container" id="eflw-teamcards-container">';
 
         foreach ($teams as $key => $team) {
             $html .= '<div class="eflw-team-card ' . esc_attr($settings['card-shadow'] == 'yes' ? 'shadow' : '') . '">
@@ -548,3 +587,4 @@ class Football_League_Widget extends Widget_Base
 }
 
 //TODO: aling text verticaly
+

@@ -9,7 +9,8 @@
     display: flex;
     justify-content: space-evenly;
     align-items: center;
-    min-height: 100vh;
+    min-height: fit-content;
+    padding: 100px 0;
     margin: 20px 1rem;
     .eflw-team-card{
         position: relative;
@@ -111,5 +112,23 @@
             }
         }
 
+    }
+}
+
+
+.eflw-teamcards-query{
+    position: relative;
+    padding: 20px 10px;
+    border: solid 1px #aaa;
+    border-radius: 10px;
+    .select-team-input{
+        margin: 20px 0;
+        span{
+            margin-right: 20px;
+        }
+    } 
+
+    .selection-criteria{
+        margin: 20px 0;
     }
 }

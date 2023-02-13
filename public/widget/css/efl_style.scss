@@ -1,3 +1,11 @@
+
+@font-face{
+    font-family: 'poppins_jbg';
+    src: url('/public/widget/font/Poppins-Light.ttf');
+
+}
+
+
 .eflw-teamcards-container{
     *{
         margin: 0;
@@ -5,18 +13,19 @@
         box-sizing: border-box;
         color: #555;
         display: relative;
+        font-family: 'poppins_jbg' sans-serif;
     }
     display: grid;
     width: 100%;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     align-items: center;
-    min-height: 100vh;
+    margin: 50px 0;
     gap: 10px;
     
     .eflw-team-card{
         position: relative;
         width: 280px;
-        height: 260px;
+        height: 280px;
         border-radius: 10px;
         border-color: #eee;
         border-width: 1px;
@@ -191,5 +200,47 @@
             transition: .3s;
             background-color: #999;
         }
+    }
+}
+
+
+.eflw-teamcards-query{
+    .select-team-input{
+        input[type="radio"]:checked+label{
+            padding: 10px 10px;
+            border-radius: 5px;
+            background-color: #aaa;
+        }
+        .show-by{
+            display: none;
+        }
+        label{
+            padding: 10px 10px;
+            border-radius: 5px;
+            background-color: #ddd;
+            margin: 0 5px;
+
+        }
+    }
+}
+
+.eflw-teamcards-query{
+    position: relative;
+    padding: 20px;
+    border: solid 1px #aaa;
+    border-radius: 10px;
+    .select-team-input{
+        margin: 20px 0;
+        label{
+            cursor: pointer;
+        }
+        span{
+            margin-right: 20px;
+        }
+    } 
+
+    .selection-criteria{
+        margin: 20px 0;
+        height: 30px;
     }
 }
